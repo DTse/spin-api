@@ -2,8 +2,6 @@
 
 namespace App\Http\Resources;
 
-use App\Photo;
-
 use Illuminate\Http\Resources\Json\Resource;
 
 class SearchResource extends Resource
