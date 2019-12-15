@@ -6,27 +6,46 @@ use Illuminate\Http\Request;
 
 use App\Http\Resources\SearchCollection;
 use App\Http\Resources\FilterResource;
+use App\Logs;
 
 class ApiController extends Controller
 {
     /**
-     * Create the search function. This calls the getEntries from the Entries model and returns the json response of the results.
+     * Create the search function.
+     * This calls the getEntries from the Entries model and returns the json response of the results.
      *
      * @return json
      */
     public function handleSearch(Request $request){
         $availability = $request->get("availability");
         $type = $request->get("type");
-        $location = $request->get("location");
+        $location = $request->get("locations");
         $sqMeters = $request->get("sqMeters");
         $price = $request->get("price");
 
         $results = \App\Entries::getEntries($availability, $type, $location, $sqMeters, $price)->paginate(5);
 
         $formatted = new SearchCollection($results);
+
+        if($availability || $type || $location || $sqMeters || $price){
+            Logs::create([
+                'action' => 'search',
+                'availability' => $availability,
+                'type' => $type,
+                'location' => $location,
+                'sqMeters' => $sqMeters,
+                'price' => $price
+            ]);
+        }
+
         return response()->json($formatted);
     }
 
+    /**
+     * Create the filters dynamically from the available db entries
+     *
+     * @return json
+     */
     public function handleFilters(){
         $selects = ['id','name'];
 
@@ -81,7 +100,7 @@ class ApiController extends Controller
                 "type" => 'range',
                 "options" => [
                     "min"=> 10,
-                    "max"=> 500
+                    "max"=> 10000
                 ]
             ]
         ];

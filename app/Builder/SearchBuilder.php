@@ -5,6 +5,11 @@ namespace App\Builder;
 use Illuminate\Database\Eloquent\Builder;
 use Carbon\Carbon;
 
+/**
+* Create a custom Query Builder to create the search query.
+*
+* @return Builder
+*/
 class SearchBuilder extends Builder
 {
     public function apiSearch($availability, $type, $location, $sqMeters, $price){
@@ -17,10 +22,15 @@ class SearchBuilder extends Builder
             return $query->whereIn('location',  $location);
 
         })->when($sqMeters, function ($query) use ($sqMeters) {
-            return $query->whereBetween('sqMeters',  $sqMeters);
+            foreach ($sqMeters as $value) {
+                return $query->orWhereBetween('sqMeters', explode(',',$value));
+            }
 
         })->when($price, function ($query) use ($price) {
-            return $query->whereBetween('price',  $price);
+            foreach ($price as $value) {
+                return $query->orWhereBetween('price', explode(',',$value));
+            }
+
 
         })->when($type, function ($query) use ($type) {
             return $query->whereHas('type', function ($queryH) use($type) {

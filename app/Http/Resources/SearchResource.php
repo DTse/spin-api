@@ -12,7 +12,7 @@ class SearchResource extends Resource
         return [
             'id' => $this->id,
             'availability' => $this->availability()->first()->name,
-            'type' => $this->type()->first()->name,
+            'type' => $this->type()->get()->pluck('name'),
             'location' => $this->locations()->first()->name,
             'sqMeters' => $this->sqMeters,
             'price' => $this->price,
