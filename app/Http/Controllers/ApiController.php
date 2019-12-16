@@ -30,11 +30,11 @@ class ApiController extends Controller
         if($availability || $type || $location || $sqMeters || $price){
             Logs::create([
                 'action' => 'search',
-                'availability' => $availability,
-                'type' => $type,
-                'location' => $location,
-                'sqMeters' => $sqMeters,
-                'price' => $price
+                'availability' => $availability ? implode(',',$availability) : null,
+                'type' =>  $type ? implode(',',$type) : null,
+                'location' => $location ? implode(',',$location) : null,
+                'sqMeters' => $sqMeters ? implode(',',$sqMeters) : null,
+                'price' => $price ? implode(',',$price) : null
             ]);
         }
 
